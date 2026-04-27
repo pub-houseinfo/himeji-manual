@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BESSO姫路 清掃オペレーションフロー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: #f0f2f5;
+      padding: 32px 24px;
+      min-width: 1200px;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: 20px;
+      color: #1a2340;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    header p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* ===== Legend ===== */
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #333;
+    }
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ===== Table wrapper ===== */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      background: #fff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1140px;
+    }
+
+    /* ===== Column headers (STEP row) ===== */
+    thead th {
+      background: #1a2340;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 14px 10px;
+      text-align: center;
+      border-right: 1px solid #2d3a5e;
+      white-space: nowrap;
+    }
+    thead th:first-child {
+      width: 110px;
+      border-radius: 12px 0 0 0;
+    }
+    thead th:last-child {
+      border-radius: 0 12px 0 0;
+      border-right: none;
+    }
+    .step-num {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.75;
+      margin-bottom: 2px;
+    }
+
+    /* ===== Role header (left column) ===== */
+    .role-header {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0 12px;
+      text-align: center;
+      vertical-align: middle;
+      border-right: 2px solid #dde3ee;
+      white-space: nowrap;
+      width: 110px;
+    }
+
+    /* ===== Role colors ===== */
+    .role-system    { background: #e8f4fd; color: #1565c0; border-left: 5px solid #1e88e5; }
+    .role-honsha    { background: #e0f7f4; color: #00695c; border-left: 5px solid #00897b; }
+    .role-yuka      { background: #e8f8f0; color: #2e7d32; border-left: 5px solid #43a047; }
+    .role-leader    { background: #fff8e1; color: #e65100; border-left: 5px solid #fb8c00; }
+    .role-staff     { background: #f3e5f5; color: #6a1b9a; border-left: 5px solid #8e24aa; }
+    .role-doi       { background: #efebe9; color: #4e342e; border-left: 5px solid #6d4c41; }
+
+    /* ===== Body rows ===== */
+    tbody tr {
+      border-bottom: 1px solid #eaecf4;
+    }
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    /* ===== Task cells ===== */
+    td.task-cell {
+      padding: 10px 8px;
+      vertical-align: top;
+      border-right: 1px solid #eaecf4;
+    }
+    td.task-cell:last-child {
+      border-right: none;
+    }
+    td.empty-cell {
+      background: #f7f8fb;
+      border-right: 1px solid #eaecf4;
+    }
+    td.empty-cell:last-child {
+      border-right: none;
+    }
+
+    /* ===== Task cards ===== */
+    .card {
+      border-radius: 7px;
+      padding: 9px 11px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+    .card:last-child { margin-bottom: 0; }
+
+    .card-auto {
+      background: #dbeeff;
+      border-left: 3px solid #1e88e5;
+      color: #0d3c6e;
+    }
+    .card-honsha {
+      background: #d0f2ed;
+      border-left: 3px solid #00897b;
+      color: #00352b;
+    }
+    .card-yuka {
+      background: #d6f5e3;
+      border-left: 3px solid #43a047;
+      color: #1b4d2a;
+    }
+    .card-leader {
+      background: #fff0cc;
+      border-left: 3px solid #fb8c00;
+      color: #6d3200;
+    }
+    .card-staff {
+      background: #eedff8;
+      border-left: 3px solid #8e24aa;
+      color: #3e0060;
+    }
+    .card-doi {
+      background: #efebe9;
+      border-left: 3px solid #6d4c41;
+      color: #3e2723;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .card ul {
+      padding-left: 14px;
+    }
+    .card ul li {
+      font-size: 11.5px;
+      margin-bottom: 2px;
+    }
+
+    /* ===== Handoff arrow badge ===== */
+    .handoff {
+      display: inline-block;
+      background: #ff7043;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-top: 5px;
+    }
+
+    /* ===== KPI footer ===== */
+    .kpi-section {
+      margin-top: 28px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      padding: 20px 24px;
+    }
+    .kpi-section h2 {
+      font-size: 14px;
+      color: #1a2340;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .kpi-card {
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 12px 16px;
+      border-left: 4px solid #1a2340;
+    }
+    .kpi-card .kpi-label {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .kpi-card .kpi-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a2340;
+    }
+
+    /* ===== Rules section ===== */
+    .rules-section {
+      margin-top: 20px;
+      background: #fff8e1;
+      border-radius: 12px;
+      padding: 18px 24px;
+      border-left: 5px solid #fb8c00;
+    }
+    .rules-section h2 {
+      font-size: 14px;
+      color: #e65100;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .rules-section ul {
+      padding-left: 18px;
+    }
+    .rules-section ul li {
+      font-size: 13px;
+      color: #4e2600;
+      margin-bottom: 5px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>BESSO姫路 清掃オペレーションフロー</h1>
+  <p>BESSO姫路（minpakuIN 導入版）　予約受信 → 清掃完了 全フロー</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1e88e5"></div>システム（自動）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00897b"></div>本社</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#43a047"></div>友香さん（管理責任者）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fb8c00"></div>スタッフリーダー</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8e24aa"></div>スタッフ</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6d4c41"></div>土井さん（品質・在庫管理）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff7043"></div>引き継ぎ・連携</div>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>担当</th>
+        <th><span class="step-num">STEP 1</span>予約発生</th>
+        <th><span class="step-num">STEP 2</span>変更・キャンセル</th>
+        <th><span class="step-num">STEP 3</span>清掃担当決定・配置</th>
+        <th><span class="step-num">STEP 4</span>チェックアウト確認</th>
+        <th><span class="step-num">STEP 5</span>清掃開始</th>
+        <th><span class="step-num">STEP 6</span>清掃作業・完了報告</th>
+        <th><span class="step-num">STEP 7</span>最終確認・品質管理</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- ===== システム（自動） ===== -->
+      <tr>
+        <td class="role-header role-system">システム<br>（自動）</td>
+
+        <!-- STEP1 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">minpakuIN</div>
+            <ul>
+              <li>本社の手配依頼を受信・友香さんへ通知</li>
+              <li>Googleカレンダーへ自動連携</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP2 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">キャンセル通知</div>
+            <ul>
+              <li>友香さんへシステム通知</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP3 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">前日リマインド自動通知</div>
+            <ul>
+              <li>翌日の清掃予定を担当スタッフの登録メールへ自動送信</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP4 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">minpakuIN</div>
+            <ul>
+              <li>チェックアウト状況をリアルタイムで可視化（スタッフが直接確認）</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP5 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">minpakuIN</div>
+            <ul>
+              <li>「清掃開始」ボタンタップで本社・友香さんへ自動通知</li>
+              <li>ステータスを全担当者へ可視化</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP6 -->
+        <td class="task-cell">
+          <div class="card card-auto">
+            <div class="card-title">minpakuIN</div>
+            <ul>
+              <li>「清掃完了」ボタンタップで本社・友香さんへ自動通知</li>
+              <li>ステータス・チェック項目・写真を全担当者へ可視化</li>
+              <li style="font-size:11px;color:#555;">※全チェック項目完了しないと完了ボタンは押せない</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP7 -->
+        <td class="empty-cell"></td>
+      </tr>
+
+      <!-- ===== 本社 ===== -->
+      <tr>
+        <td class="role-header role-honsha">本社</td>
+
+        <!-- STEP1 -->
+        <td class="task-cell">
+          <div class="card card-honsha">
+            <div class="card-title">予約受付・共有</div>
+            <ul>
+              <li>minpakuINで友香さんへ清掃手配依頼を送信</li>
+              <li>LINEお掃除グループへ予約状況を共有</li>
+              <li>Googleカレンダーに名前・人数・清掃予定を登録</li>
+            </ul>
+            <span class="handoff">▶ 友香さんへ連携</span>
+          </div>
+        </td>
+
+        <!-- STEP2 -->
+        <td class="task-cell">
+          <div class="card card-honsha">
+            <div class="card-title">キャンセル連絡</div>
+            <ul>
+              <li>友香さんへキャンセルを連絡</li>
+              <li>お客様のトラブル・忘れ物も友香さんへ連絡</li>
+              <li>Googleカレンダーの予約情報（客名等）を削除</li>
+            </ul>
+            <span class="handoff">▶ 友香さんへ連携</span>
+          </div>
+        </td>
+
+        <!-- STEP3 -->
+        <td class="task-cell">
+          <div class="card card-honsha">
+            <div class="card-title">直近予約の緊急連絡</div>
+            <ul>
+              <li>1週間以内の予約は<br>友香さんへ電話で直接連絡<br><span style="font-size:11px;color:#555;">（LINE見落とし防止のため）</span></li>
+            </ul>
+            <span class="handoff">▶ 友香さんへ電話</span>
+          </div>
+        </td>
+
+        <!-- STEP4〜7: 作業なし -->
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+      </tr>
+
+      <!-- ===== 友香さん（管理責任者） ===== -->
+      <tr>
+        <td class="role-header role-yuka">友香さん<br>（管理）</td>
+
+        <!-- STEP1: 作業なし -->
+        <td class="empty-cell"></td>
+
+        <!-- STEP2 -->
+        <td class="task-cell">
+          <div class="card card-yuka">
+            <div class="card-title">キャンセル対応</div>
+            <ul>
+              <li>本社からの連絡をスタッフリーダーへ伝達</li>
+            </ul>
+            <span class="handoff">▶ スタッフリーダーへ連携</span>
+          </div>
+        </td>
+
+        <!-- STEP3 -->
+        <td class="task-cell">
+          <div class="card card-yuka">
+            <div class="card-title">清掃手配・依頼送信</div>
+            <ul>
+              <li>本社からの依頼をminpakuINで受信</li>
+              <li>Googleカレンダーでスタッフ担当を確認</li>
+              <li>minpakuINで対象スタッフへ清掃依頼を送信</li>
+            </ul>
+          </div>
+          <div class="card card-yuka">
+            <div class="card-title">スタッフ初期設定（都度）</div>
+            <ul>
+              <li>新規スタッフの名前・メールをminpakuINに登録</li>
+            </ul>
+          </div>
+          <div class="card card-yuka">
+            <div class="card-title">繁忙期管理</div>
+            <ul>
+              <li>人員不足状況を確認・時給アップを決定</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP4 -->
+        <td class="task-cell">
+          <div class="card card-yuka">
+            <div class="card-title">習慣化まで：開始確認</div>
+            <ul>
+              <li>11時時点でスタートボタンが押されているか確認</li>
+              <li>未操作のスタッフへ確認連絡</li>
+              <li style="font-size:11px;color:#555;">※習慣化後は不要</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP5: 作業なし -->
+        <td class="empty-cell"></td>
+
+        <!-- STEP6 -->
+        <td class="task-cell">
+          <div class="card card-yuka">
+            <div class="card-title">習慣化まで：完了確認</div>
+            <ul>
+              <li>15時過ぎても完了未入力のスタッフへ確認連絡</li>
+              <li style="font-size:11px;color:#555;">※習慣化後は不要</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP7 -->
+        <td class="task-cell">
+          <div class="card card-yuka">
+            <div class="card-title">新人スタッフ現場確認</div>
+            <ul>
+              <li>新人スタッフの清掃後に現場チェック訪問・指導</li>
+              <li style="font-size:11px;color:#555;">慣れたらスタッフ本人の責任で完遂</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+
+      <!-- ===== スタッフリーダー ===== -->
+      <tr>
+        <td class="role-header role-leader">スタッフ<br>リーダー</td>
+
+        <!-- STEP1: 作業なし -->
+        <td class="empty-cell"></td>
+
+        <!-- STEP2 -->
+        <td class="task-cell">
+          <div class="card card-leader">
+            <div class="card-title">キャンセル時の対応</div>
+            <ul>
+              <li>清掃予定は削除せず「仮」として残す<br><span style="font-size:11px;color:#555;">再予約時に同スタッフを優先配置できるようにするため</span></li>
+              <li>カレンダーを「仮設定」に修正</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP3 -->
+        <td class="task-cell">
+          <div class="card card-leader">
+            <div class="card-title">シフト管理</div>
+            <ul>
+              <li>Googleカレンダーでスタッフの名前入力を確認</li>
+              <li>1ヶ月先まで全枠に人員を配置</li>
+              <li>空き枠はスタッフへ個別確認・調整</li>
+            </ul>
+            <span class="handoff">▶ スタッフへ連携</span>
+          </div>
+          <div class="card card-leader">
+            <div class="card-title">繁忙期対応</div>
+            <ul>
+              <li>人員不足の場合は友香さんへ時給アップを要請</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP4〜7: 作業なし -->
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+      </tr>
+
+      <!-- ===== スタッフ ===== -->
+      <tr>
+        <td class="role-header role-staff">スタッフ</td>
+
+        <!-- STEP1〜2: 作業なし -->
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+
+        <!-- STEP3 -->
+        <td class="task-cell">
+          <div class="card card-staff">
+            <div class="card-title">出勤可能日の登録</div>
+            <ul>
+              <li>minpakuINで行ける日・行けない日を設定</li>
+              <li>Googleカレンダーに自分の名前を入力</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP4 -->
+        <td class="task-cell">
+          <div class="card card-staff">
+            <div class="card-title">チェックアウト確認・出発判断</div>
+            <ul>
+              <li>minpakuINでチェックアウトをリアルタイム確認</li>
+              <li>自分の判断でベッソ姫路へ出発<br><span style="font-size:11px;color:#555;">（11時チェックアウトの場合は11時以降に出発）</span></li>
+            </ul>
+            <div style="font-size:11px;color:#6a1b9a;margin-top:6px;font-weight:700;">⚠ 確認前の清掃開始禁止</div>
+          </div>
+        </td>
+
+        <!-- STEP5 -->
+        <td class="task-cell">
+          <div class="card card-staff">
+            <div class="card-title">清掃開始</div>
+            <ul>
+              <li>忘れ物・破損の事前確認</li>
+              <li>現場到着後「掃除スタート」ボタンを押す</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP6 -->
+        <td class="task-cell">
+          <div class="card card-staff">
+            <div class="card-title">清掃作業</div>
+            <ul>
+              <li>Googleカレンダーで次宿泊者の人数・連泊を確認<br><span style="font-size:11px;color:#555;">※minpakuINの人数は前日分のため必ずカレンダーで確認</span></li>
+              <li>室内清掃（リビング・寝室）</li>
+              <li>水回り（風呂・トイレ・キッチン）</li>
+              <li>ベッドセッティング・アメニティ準備<br><span style="font-size:11px;color:#555;">連泊の場合：人数 × 宿泊日数分を用意</span></li>
+              <li>S1/S2クリーニングを倉庫へ戻す</li>
+              <li>ゴミ満杯時：ガムテープで封 → LINEグループで報告</li>
+              <li>15時チェックインがある場合 → 照明・エアコンONで退出</li>
+            </ul>
+          </div>
+          <div class="card card-staff">
+            <div class="card-title">清掃完了報告</div>
+            <ul>
+              <li>チェック項目を順番に確認・写真を添付</li>
+              <li>全項目完了後「掃除完了」ボタンを押す（必須）</li>
+              <li>期限：当日15時までに完了</li>
+            </ul>
+            <div style="font-size:11px;color:#6a1b9a;margin-top:6px;font-weight:700;">⚠ 代理報告禁止（例外時は友香さん承認）</div>
+          </div>
+          <div class="card card-staff">
+            <div class="card-title">トラブル発生時</div>
+            <ul>
+              <li>LINEお掃除グループで全員に報告・共有</li>
+              <li>緊急時 → 友香さんへ直接連絡</li>
+            </ul>
+          </div>
+        </td>
+
+        <!-- STEP7: 作業なし -->
+        <td class="empty-cell"></td>
+      </tr>
+
+      <!-- ===== 土井さん（品質・在庫管理） ===== -->
+      <tr>
+        <td class="role-header role-doi">土井さん<br>（品質・在庫）</td>
+
+        <!-- STEP1〜5: 作業なし -->
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+        <td class="empty-cell"></td>
+
+        <!-- STEP6: 作業なし -->
+        <td class="empty-cell"></td>
+
+        <!-- STEP7 -->
+        <td class="task-cell">
+          <div class="card card-doi">
+            <div class="card-title">清掃品質チェック（週1〜2回）</div>
+            <ul>
+              <li>空き部屋の清掃状況を確認</li>
+              <li>スタッフへフィードバック or 補完清掃</li>
+              <li>外回り・庭周り清掃の計画・実施<br><span style="font-size:11px;color:#555;">網戸・窓外側・蜘蛛の巣・草取り・掃き掃除 等</span></li>
+            </ul>
+          </div>
+          <div class="card card-doi">
+            <div class="card-title">在庫・備品管理（週1〜2回）</div>
+            <ul>
+              <li>倉庫の在庫数・整理状況を確認</li>
+              <li>在庫80未満になったら発注</li>
+              <li>シーツ等リネン：クリーニング返却数と在庫を照合</li>
+              <li>繁忙期：クリーニング回転状況を重点チェック</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<!-- KPI -->
+<div class="kpi-section">
+  <h2>管理KPI</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">清掃担当配置完了</div>
+      <div class="kpi-value">1ヶ月先まで 100%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">清掃完了報告率</div>
+      <div class="kpi-value">当日中 100%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">清掃開始確認（友香さん）</div>
+      <div class="kpi-value">11時時点で全件確認</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">清掃完了確認（友香さん）</div>
+      <div class="kpi-value">15時過ぎに未完了ゼロ</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">在庫発注ライン</div>
+      <div class="kpi-value">残80未満で即発注</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">品質チェック頻度</div>
+      <div class="kpi-value">週1〜2回（土井さん）</div>
+    </div>
+  </div>
+</div>
+
+<!-- 重要ルール -->
+<div class="rules-section">
+  <h2>⚠ 重要ルール（必読）</h2>
+  <ul>
+    <li>チェックアウトをminpakuINで確認してから清掃に出発する（未確認での清掃開始禁止）</li>
+    <li>清掃完了報告は担当スタッフ本人がminpakuINに入力（代理禁止。例外時は友香さん承認）</li>
+    <li>Googleカレンダーで次宿泊者の人数・連泊を必ず確認する（minpakuINの人数は前日分のため不正確）</li>
+    <li>イレギュラーは自己判断で動かない。必ず友香さん or リーダーへ確認してから行動</li>
+    <li>キャンセル時の清掃予定は削除しない（「仮」として残し、再予約時に同スタッフを優先配置できる状態にする）</li>
+    <li>1週間以内の直近予約は電話で友香さんへ直接連絡（LINE見落とし防止）</li>
+    <li>繁忙期の時給アップ判断は友香さんが行う（リーダーからの要請を受けて決定）</li>
+    <li>未入力＝未完了扱い（ステータスの入力がすべて）</li>
+  </ul>
+</div>
+
+</body>
+</html>
